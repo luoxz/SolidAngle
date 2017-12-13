@@ -155,9 +155,6 @@
     <ClInclude Include="..\Source\Experimental\Public\SkelImport.h">
       <Filter>Fbx</Filter>
     </ClInclude>
-    <ClInclude Include="..\Source\Experimental\Public\ReferenceSkeleton.h">
-      <Filter>Fbx</Filter>
-    </ClInclude>
     <ClInclude Include="..\Source\Experimental\Public\Texture.h">
       <Filter>Fbx</Filter>
     </ClInclude>
@@ -188,5 +185,10 @@
     <Filter Include="Mesh">
       <UniqueIdentifier>{3f60dc12-1262-49bb-97b3-e3f5add1dff6}</UniqueIdentifier>
     </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\Source\Experimental\Private\SkeletalMesh.hlsl">
+      <Filter>Shader</Filter>
+    </None>
   </ItemGroup>
 </Project>

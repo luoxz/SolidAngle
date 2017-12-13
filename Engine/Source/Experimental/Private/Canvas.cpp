@@ -14,6 +14,14 @@ Y3DCanvas::Y3DCanvas()
 void Y3DCanvas::Init()
 {
 	LineDatas.Empty();
+	TArray<D3D11_INPUT_ELEMENT_DESC> layout =
+	{
+		{ "POSITION",  0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0,  D3D11_INPUT_PER_VERTEX_DATA, 0 },
+		{ "NORMAL",    0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+		{ "TEXCOORD",  0, DXGI_FORMAT_R32G32_FLOAT,    0, 24, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+		{ "COLOR",  0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 32, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+	};
+	m_VSShader->BindInputLayout(layout);
 	m_VSShader->CreateShader("..\\..\\Source\\Experimental\\Private\\Canvas.hlsl", "VSMain");
 	m_PSShader->CreateShader("..\\..\\Source\\Experimental\\Private\\Canvas.hlsl", "PSColor");
 	CreateRasterStateNonCull(m_rs);
@@ -31,6 +39,31 @@ void Y3DCanvas::DrawLine(FVector StartPos, FVector EndPos, FLinearColor Color)
 	Vertex.Position = EndPos;
 	Vertex.Color = Color;
 	LineDatas.Add(Vertex);
+}
+
+void Y3DCanvas::DrawBall(FVector Pos, FLinearColor Color, float Length /*= 0.1f*/)
+{
+	FVector Point0(-1, 1, -1);
+	FVector Point1(1, 1, -1);
+	FVector Point2(1, -1, -1);
+	FVector Point3(-1, -1, -1);
+	FVector Point4(-1, 1, 1);
+	FVector Point5(1, 1, 1);
+	FVector Point6(1, -1, 1);
+	FVector Point7(-1, -1, 1);
+
+	DrawLine(Point0*Length+ Pos, Point1*Length+Pos, Color);
+	DrawLine(Point0*Length+Pos, Point3*Length+Pos, Color);
+	DrawLine(Point0*Length+Pos, Point4*Length+Pos, Color);
+	DrawLine(Point1*Length+Pos, Point2*Length+Pos, Color);
+	DrawLine(Point1*Length+Pos, Point5*Length+Pos, Color);
+	DrawLine(Point2*Length+Pos, Point3*Length+Pos, Color);
+	DrawLine(Point2*Length+Pos, Point6*Length+Pos, Color);
+	DrawLine(Point3*Length+Pos, Point7*Length+Pos, Color);
+	DrawLine(Point4*Length+Pos, Point5*Length+Pos, Color);
+	DrawLine(Point4*Length+Pos, Point7*Length+Pos, Color);
+	DrawLine(Point5*Length+Pos, Point6*Length+Pos, Color);
+	DrawLine(Point6*Length+Pos, Point7*Length+Pos, Color);
 }
 
 void Y3DCanvas::Render(TSharedRef<FRenderInfo> RenderInf)

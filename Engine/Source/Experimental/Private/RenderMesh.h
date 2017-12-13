@@ -21,6 +21,27 @@ struct FRenderMeshCBuffer
 	FMatrix  m_matInvViewProj;
 	FVector  m_lightDir;
 };
+
+class FSkeletalMeshRenderHelper
+{
+public:
+	FSkeletalMeshRenderHelper(YSkeletalMesh* InSkeletalMesh, UAnimSequence* InAnimSequence);
+	~FSkeletalMeshRenderHelper();
+	void Init();
+	void Render(TSharedRef<FRenderInfo> RenderInfo);
+private:
+	YSkeletalMesh* SkeletalMesh;
+	UAnimSequence* AnimSequence;
+	TUniquePtr<YVSShader>		VSShader;
+	TUniquePtr<YPSShader>		PSShader;
+	TComPtr<ID3D11Buffer>       VB;
+	TComPtr<ID3D11Buffer>       IB;
+	TArray<FSoftSkinVertex> SkinVertex;
+	FMultiSizeIndexContainerData IndexData;
+	TComPtr<ID3D11BlendState>		m_bs;
+	TComPtr<ID3D11DepthStencilState>m_ds;
+	TComPtr<ID3D11RasterizerState>	m_rs;
+};
 class RenderScene
 {
 public:
@@ -29,12 +50,15 @@ public:
 	virtual	void					Init();
 	virtual void					Update(float ElpaseTime);
 	virtual void					Render(TSharedRef<FRenderInfo> RenderInfo);
+	virtual void					AllocResource();
 	void							SetScreenWidthHeigth(int width, int height) { m_ScreenWidth = (float)width; m_ScreenHeight = (float)height; }
 	void							SetMesh(std::unique_ptr<MeshModel> && pMesh) { m_pMesh = std::move(pMesh); }
-	void							SetFSkeletalMeshImportData(FSkeletalMeshImportData* pSkeletalMeshData);
+	void							RegisterSkeletalMesh(YSkeletalMesh* pSkeletalMesh,UAnimSequence* pAnimationSequence);
+	void							PlayAnimation(UAnimSequence* pAnimationSequence) { AnimationSequence = pAnimationSequence; }
 	void							CreateMeshResource();
 	void							DrawGridAndCoordinates();
-	void							DrawSkeletalMeshImportData();
+	void							DrawSkeletalMeshes();
+	void							DrawSkeleton(YSkeletalMesh* pSkeletalMesh);
 private:
 	float							m_ScreenWidth;
 	float							m_ScreenHeight;
@@ -44,4 +68,8 @@ private:
 	TComPtr<ID3D11DepthStencilState>m_ds;
 private:
 	FSkeletalMeshImportData*		m_pSkeletalMeshData;
+	TArray<YSkeletalMesh*>			SkeletalMeshes;
+	TArray<UAnimSequence*>			AnimationSequences;
+	TArray<TUniquePtr<FSkeletalMeshRenderHelper>> SkeletalMeshRenderHeplers;
+	UAnimSequence*					AnimationSequence;
 };
